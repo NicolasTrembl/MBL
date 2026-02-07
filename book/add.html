@@ -1,0 +1,38 @@
+<div class="add-container">
+    <div class="mode-selector">
+        <button id="modeSearch" class="active"><i data-lucide="search"></i> Recherche</button>
+        <button id="modeScan"><i data-lucide="scan-barcode"></i> Scanner</button>
+        <button id="modeManual"><i data-lucide="pen-tool"></i> Manuel</button>
+    </div>
+
+    <div class="interaction-zone">
+        <div id="viewSearch" class="input-group">
+            <div class="autocomplete-wrapper">
+                <input type="text" id="bookInput" placeholder="Titre, auteur, n°ISBN...">
+                <ul id="suggestions" class="suggestions-list hidden"></ul>
+            </div>
+        </div>
+
+        <div id="viewScan" class="input-group hidden">
+            <div id="reader"></div>
+            <div class="scan-controls">
+                <p id="scanError" class="error-msg hidden">Livre non trouvé.</p>
+                </div>
+        </div>
+    </div>
+
+    <div id="bookDetails" class="details-card">
+        <div id="coverWrapper" class="cover-wrapper" style="cursor: pointer;">
+            <img id="prevCover" src="" alt="Couverture">
+            <input type="file" id="coverInput" accept="image/*" class="hidden">
+            <p id="uploadHint" class="hidden" style="font-size: 0.7rem; text-align: center;">Cliquer pour changer</p>
+        </div>
+        
+        <div class="fields-group">
+            <input type="text" id="detailTitle" placeholder="Titre du livre">
+            <input type="text" id="detailAuthor" placeholder="Auteur">
+            <input type="number" id="detailYear" placeholder="Année de parution">
+            <button id="saveBookBtn" class="btn-success">Enregistrer</button>
+        </div>
+    </div>
+</div>

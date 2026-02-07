@@ -1,0 +1,438 @@
+:root {
+    --background-color: #181B1E;
+    --background-variant: #5F6266;
+    --card-background-color: #A5A9AE;
+    --highlight-color: #CFD1D4;
+    --light-color: #F8F9FA;
+
+    --font-color-on-bg: var(--light-color);
+    --font-color-on-lg: var(--background-color);
+    --font-color-default: snow;
+
+    --xs-padding: 4px;
+    --s-padding: 8px;
+    --r-padding: 16px;
+
+    --s-gap: 5px;
+    --r-gap: 8px;
+
+    --s-radius: 8px;
+    --r-radius: 12px;
+
+    --nav-height: 6vh;
+    --header-height: 5vh;
+
+    --drawer-width: 67%;
+}
+
+* {
+    font-family: 'Montserrat', Helvetica, sans-serif;
+    
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+
+    height: 100dvh;
+    width: 100dvw;
+
+    background-color: var(--background-color);
+    color: var(--font-color-default);
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+    padding-left: var(--r-padding);
+    padding-right: var(--r-padding);
+
+    width: 100%;
+    height: var(--header-height);
+    
+    background-color: var(--background-variant);
+}
+
+main {
+    flex: 1;
+    
+    background-color: var(--background-color);
+}
+
+.gridView {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 200px;
+    overflow-y: auto; 
+
+    gap: var(--r-gap);
+    padding: var(--s-padding);
+}
+
+.centering {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+
+    height: var(--nav-height);
+    
+    background-color: var(--background-variant);
+}
+
+.drawer {
+    z-index: 4;
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    width: var(--drawer-width);
+    height: 100%;
+    
+    background-color: var(--card-background-color);
+    
+    transition: transform 250ms ease-in-out;
+    transform: translateX(0);
+}
+
+.hidden_right {
+    transform: translateX(100%);
+}
+
+.hidden {
+    display: none;
+}
+
+button {
+    background: transparent;
+    border: none;
+    color: var(--font-color-default);
+}
+
+.add-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    padding: var(--r-padding);
+    
+    height: 100%;
+}
+
+.mode-selector {
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
+    
+    border-radius: var(--r-radius);
+    padding: var(--xs-padding);
+
+    background-color: var(--background-variant);
+}
+
+.mode-selector button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: var(--s-padding);
+    border-radius: var(--s-radius);
+    gap: var(--s-gap);
+    
+    font-size: 0.8rem;    
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.mode-selector button.active {
+    background: var(--highlight-color);
+    color: var(--font-color-on-lg);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.details-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    width: 100%;
+    
+    padding: var(--s-padding);
+    gap: var(--r-gap);
+    border-radius: var(--r-radius);
+    
+    background: var(--card-background-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.cover-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    
+    width: 100px;
+    height: 140px;
+    
+    border-radius: var(--s-radius);
+    
+    background: var(--highlight-color);
+}
+
+.cover-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fields-group {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    
+    gap: var(--r-gap);
+    margin: var(--xs-padding);
+}
+
+.fields-group input {
+    padding: var(--s-padding) var(--xs-padding) 
+                var(--s-padding) var(--xs-padding);
+    
+    border: 1px solid var(--light-color);
+    border-radius: var(--s-radius);
+    
+    outline: none;
+}
+
+.btn-success {
+    background: var(--background-color);
+
+    padding: var(--r-padding);
+    border-radius: var(--s-radius);
+
+    color: var(--font-color-on-bg);
+    font-weight: bold;
+}
+
+.autocomplete-wrapper { 
+    position: relative; 
+    width: 100%;
+}
+
+.autocomplete-wrapper > input {
+    width: 100%;
+    height: 2rem;
+    
+    padding: var(--r-padding);
+    border-radius: var(--s-radius);
+    border-color: transparent;
+}
+
+.suggestions-list {
+    z-index: 3;
+    position: absolute;
+    overflow-y: auto;
+    list-style: none;
+
+    max-height: 400px;
+    width: 100%;
+    
+    background: var(--highlight-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-radius: 0 0 10px 10px;
+}
+
+.suggestions-list li { 
+    color: var(--font-color-on-lg);
+    
+    cursor: pointer; 
+    
+    border-bottom: 1px solid var(--light-color); 
+    padding: 10px; 
+}
+
+#viewScan {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+ 
+    width: 100%;
+}
+
+#reader {
+    width: 100% !important;
+    max-height: 30dvh !important;
+    overflow: hidden;
+    position: relative;
+    background: var(--background-color);
+    border-radius: var(--r-radius);
+    border: none !important;
+}
+
+#reader video {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 30dvh !important;
+    object-fit: cover !important;
+}
+
+#reader__scan_region {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#reader__scan_region canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+#reader__status_span {
+    display: none !important;
+}
+
+@keyframes scanning {
+    0% { top: 30%; }
+    50% { top: 70%; }
+    100% { top: 30%; }
+}
+
+
+.interaction-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    width: 100%;
+    min-height: 100px;
+}
+
+.cover-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 100px;
+    overflow: hidden;
+    min-height: 140px;
+
+    border-radius: var(--s-radius);
+
+    background: rgba(255, 255, 255, 0.1);
+}
+
+
+.add-container {
+    transition: justify-content 0.3s ease;
+}
+
+#uploadHint {
+    color: var(--background-color);
+    font-weight: bold;
+
+    margin-top: var(--s-padding);
+}
+
+.cover-wrapper img {
+    height: auto;
+    width: 100%;
+
+    display: block;
+}
+
+.fields-group {
+    display: flex;
+    flex-direction: column;
+    
+    gap: var(--r-gap);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* La grille est déjà définie dans ton code, on ajuste le contenu */
+.gridView {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 200px; /* Ta contrainte */
+    gap: var(--r-gap);
+    padding: var(--s-padding);
+}
+
+.book-card-home {
+    display: flex;
+    flex-direction: column;
+    gap: var(--xs-padding);
+    overflow: hidden;
+}
+
+/* On utilise ta classe cover-placeholder pour l'image */
+.book-card-home .cover-placeholder {
+    width: 100%;
+    height: 140px; /* On laisse 60px pour le texte sur les 200px */
+    position: relative;
+    background: var(--background-variant);
+}
+
+.book-overlay {
+    position: absolute;
+    top: var(--xs-padding);
+    right: var(--xs-padding);
+}
+
+.status-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--light-color);
+}
+
+.status-dot.to-read { background-color: #ffd700; } /* Jaune */
+.status-dot.finished { background-color: #00ff00; } /* Vert */
+
+.book-meta {
+    display: flex;
+    flex-direction: column;
+    height: 55px;
+    padding: 0 var(--xs-padding);
+}
+
+.book-title {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--font-color-default);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.1;
+}
+
+.book-author {
+    font-size: 0.6rem;
+    color: var(--highlight-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}

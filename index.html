@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.cdnfonts.com/css/montserrat" rel="stylesheet">
+    <title>MLB</title>
+</head>
+<body>
+    <header>
+        <h1 id="title">Mes livres</h1>
+        <button id="burgerBtn" class="drawer-btn"><i data-lucide="menu"></i></button>
+    </header>
+    <main id="main">
+        <div id="sentinel"> </div>
+    </main>
+
+    <aside id="menu" class="drawer hidden_right">
+        <button id="closeMenuBtn"><i data-lucide="x" ></i></button>
+    </aside>
+    <nav>
+        <button id="homeBtn"><i data-lucide="house"></i></button>
+        <button id="searchBtn"><i data-lucide="search"></i></button>
+        <button id="addBtn"><i data-lucide="plus"></i></button>
+        <button id="userBtn"><i data-lucide="user-round"></i></button>
+    </nav>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <script src="db.js"></script>
+    <script src="main.js" defer></script>
+</body>
+</html>
