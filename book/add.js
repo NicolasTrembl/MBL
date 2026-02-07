@@ -235,7 +235,7 @@ export function init() {
             const transaction = db.transaction("books", "readwrite");
             await transaction.objectStore("books").add(newBook);
                         
-            window.history.pushState({}, "", "/home");
+            window.history.pushState({}, "", BASE_PATH + "/home");
             window.dispatchEvent(new PopStateEvent('popstate'));
         } catch (err) {
             console.error("Erreur IndexedDB:", err);

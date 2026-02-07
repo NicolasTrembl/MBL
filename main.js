@@ -1,3 +1,7 @@
+const IS_GH_PAGES = window.location.hostname.includes('github.io');
+const REPO_NAME = '/MBL';
+const BASE_PATH = IS_GH_PAGES ? REPO_NAME : '';
+
 const main = document.getElementById("main");
 const h1 = document.getElementById("title");
 const routes = {
@@ -23,8 +27,12 @@ const title = {
 let currentAbortController = null;
 
 async function router() {
-    const path = window.location.pathname;
-    const viewName = routes[path] || 'home';
+    let path = window.location.pathname;
+    if (IS_GH_PAGES) {
+        path = path.replace(REPO_NAME, '') || '/';
+    }
+    
+    const viewName = routes[path] || 'collection/index';
 
     const redirect = sessionStorage.getItem('redirect');
     if (redirect) {
@@ -52,14 +60,14 @@ async function router() {
     main.innerHTML = "<div class='centering' style='height:100%; width:100%;'><p>Chargement...</p></div>";
 
     try {
-        const response = await fetch(`/${viewName}.html`, { signal });
+        const response = await fetch(`${viewName}.html`, { signal });
         const html = await response.text();
         
         if (signal.aborted) return;
 
         main.innerHTML = html;
 
-        const module = await import(`/${viewName}.js?t=${Date.now()}`).catch(() => null);
+        const module = await import(`./${viewName}.js?t=${Date.now()}`).catch(() => null);
         
         if (module && module.init && !signal.aborted) {
             const cleanup = module.init();
@@ -91,7 +99,7 @@ document.querySelectorAll('nav button').forEach(btn => {
         console.log("Clicked on", path);
         main.classList = [];
         
-        window.history.pushState({}, "", path);
+        window.history.pushState({}, "", BASE_PATH + path);
         router();
     });
 });

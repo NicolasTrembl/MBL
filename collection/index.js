@@ -88,7 +88,7 @@ function createBookCard(book) {
     }
 
     div.onclick = () => {
-        window.history.pushState({}, "", `/book?id=${book.id}`);
+        window.history.pushState({}, "", `${BASE_PATH}/book?id=${book.id}`);
         window.dispatchEvent(new PopStateEvent('popstate'));
     };
 
