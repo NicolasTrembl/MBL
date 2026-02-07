@@ -26,6 +26,12 @@ async function router() {
     const path = window.location.pathname;
     const viewName = routes[path] || 'home';
 
+    const redirect = sessionStorage.getItem('redirect');
+    if (redirect) {
+        sessionStorage.removeItem('redirect');
+        window.history.replaceState(null, null, redirect);
+    }
+
     if (currentAbortController) {
         currentAbortController.abort();
     }
