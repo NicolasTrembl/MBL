@@ -31,8 +31,10 @@ async function router() {
     if (IS_GH_PAGES) {
         path = path.replace(REPO_NAME, '') || '/';
     }
-    
-    const viewName = routes[path] || 'collection/index';
+
+    const cleanPath = path.split('?')[0];
+
+    const viewName = routes[cleanPath] || 'collection/index';
 
     const redirect = sessionStorage.getItem('redirect');
     if (redirect) {
@@ -56,7 +58,7 @@ async function router() {
     }
 
 
-    h1.innerText = title[path] || "404";    
+    h1.innerText = title[cleanPath] || "404";    
     main.innerHTML = "<div class='centering' style='height:100%; width:100%;'><p>Chargement...</p></div>";
 
     try {

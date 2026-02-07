@@ -436,3 +436,42 @@ button {
     text-overflow: ellipsis;
     margin-top: 2px;
 }
+
+.readonly-input {
+    background: transparent !important;
+    border: none !important;
+    padding-left: 0 !important;
+    color: var(--font-color-on-lg) !important;
+    font-weight: bold;
+}
+.readonly-input:focus { outline: none; }
+
+.status-select {
+    width: 100%;
+    padding: var(--s-padding);
+    border-radius: var(--s-radius);
+    background: var(--highlight-color);
+    border: 1px solid transparent;
+}
+
+.action-btn {
+    background: var(--background-variant);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: var(--s-radius);
+    display: flex;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.action-btn:active { opacity: 0.7; }
+
+.input-wrapper label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--background-color);
+    opacity: 0.7;
+    margin-bottom: 2px;
+}
