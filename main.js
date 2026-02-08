@@ -10,7 +10,7 @@ const routes = {
     '/search': 'collection/search',
     '/collection': 'collection/index',
     '/add': 'book/add',
-    '/book': 'book/index',
+    '/book': 'book/view',
     '/user': 'user/index'
 };
 
