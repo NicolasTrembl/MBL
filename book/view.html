@@ -38,6 +38,26 @@
                 </select>
             </div>
 
+            <div class="input-wrapper">
+                <label>Tags / Catégories</label>
+                <div id="tagsList" class="tags-container">
+                    <button id="openTagModalBtn" class="tag-chip add-btn">+</button>
+                </div>
+            </div>
+
+            <div id="tagModal" class="hidden modal">
+                <div class="book-card book-card-modal">
+                    <h3 style="margin-bottom: 15px;">Ajouter un tag</h3>
+                    <input type="text" id="tagInput" placeholder="Nom du tag..." list="existingTags">
+                    <datalist id="existingTags">
+                    </datalist>
+                    <div style="display: flex; gap: var(--s-gap); margin-top: 10px;">
+                        <button id="cancelTag" class="btn-secondary" style="flex:1">Annuler</button>
+                        <button id="confirmTag" class="btn-success" style="flex:1">Ajouter</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="secondary-actions">
                 <button id="bookmarkBtn" class="action-btn" title="Marque-page">
                     <i data-lucide="bookmark"></i>
@@ -46,7 +66,7 @@
                 <button class="action-btn" title="Annotation"><i data-lucide="message-square"></i></button>
             </div>
 
-            <div id="bookmarkModal" class="hidden">
+            <div id="bookmarkModal" class="hidden modal">
                 <div class="book-card book-card-modal">
                     <h3 style="margin-bottom: 15px;">Numéro de page</h3>
                     <input type="number" id="bookmarkInput" placeholder="Ex: 42">

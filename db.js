@@ -5,17 +5,18 @@ function openDB() {
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             
-            // Store pour les LIVRES
             if (!db.objectStoreNames.contains("books")) {
                 db.createObjectStore("books", { keyPath: "id" });
             }
-            // Store pour les REVIEWS
             if (!db.objectStoreNames.contains("reviews")) {
                 db.createObjectStore("reviews", { keyPath: "id", autoIncrement: true });
             }
-            // Store pour les ANNOTATIONS
             if (!db.objectStoreNames.contains("annotations")) {
                 db.createObjectStore("annotations", { keyPath: "id", autoIncrement: true });
+            }
+
+            if (!db.objectStoreNames.contains("tags")) {
+                db.createObjectStore("tags", { keyPath: "name" });
             }
         };
 

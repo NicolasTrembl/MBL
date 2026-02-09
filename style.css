@@ -453,7 +453,7 @@ button {
 
 }
 
-#bookmarkModal {
+.modal {
     position: fixed;
 
     display: flex; 
@@ -477,10 +477,9 @@ button {
     display: none !important;
 }
 
-/* La grille est déjà définie dans ton code, on ajuste le contenu */
 .gridView {
     grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 200px; /* Ta contrainte */
+    grid-auto-rows: 200px; 
     gap: var(--r-gap);
     padding: var(--s-padding);
 }
@@ -586,4 +585,115 @@ button {
     color: var(--background-color);
     opacity: 0.7;
     margin-bottom: 2px;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-gap);
+    min-height: 32px;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.tag-chip {
+    background: var(--background-variant);
+    color: var(--font-color-default);
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.tag-chip.add-btn {
+    background: var(--highlight-color);
+    color: var(--font-color-on-lg);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.tag-chip .remove-tag {
+    cursor: pointer;
+    font-weight: bold;
+    opacity: 0.6;
+}
+
+.tag-chip .remove-tag:hover {
+    opacity: 1;
+}
+
+#tagInput {
+    width: 100%;
+    padding: var(--s-padding);
+    border-radius: var(--s-radius);
+    border: 1px solid var(--background-variant);
+    background: var(--light-color);
+}
+
+.toolbar {
+    display: flex;
+    gap: var(--s-gap);
+    padding: var(--r-padding);
+    background: var(--background-color);
+}
+
+.search-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: var(--background-variant);
+    padding: 0 var(--s-padding);
+    border-radius: var(--s-radius);
+    gap: 8px;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 10px 0;
+    width: 100%;
+    outline: none;
+}
+
+.filter-trigger {
+    background: var(--background-variant);
+    padding: 10px;
+    border-radius: var(--s-radius);
+    cursor: pointer;
+}
+
+.cover-placeholder {
+    position: relative;
+    overflow: hidden;
+}
+
+.status-banner {
+    position: absolute;
+    top: 12px;
+    right: -25px;
+    width: 100px;
+    background: var(--background-color);
+    color: white;
+    text-align: center;
+    font-size: 0.6rem;
+    font-weight: bold;
+    padding: 4px 0;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.status-banner.to-read { background: #ffd700; color: black; }
+.status-banner.reading { background: #007bff; }
+.status-banner.finished { background: #00ff00; color: black; }
+
+.tag-chip.active {
+    background: var(--background-color);
+    border-color: var(--light-color);
+    font-weight: bold;
 }

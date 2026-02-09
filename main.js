@@ -5,10 +5,9 @@ const BASE_PATH = IS_GH_PAGES ? REPO_NAME : '';
 const main = document.getElementById("main");
 const h1 = document.getElementById("title");
 const routes = {
-    '/': 'collection/index',
-    '/home': 'collection/index',
-    '/search': 'collection/search',
-    '/collection': 'collection/index',
+    '/': 'collection/home',
+    '/home': 'collection/home',
+    '/collection': 'collection/home',
     '/add': 'book/add',
     '/book': 'book/view',
     '/user': 'user/index'
@@ -17,7 +16,6 @@ const routes = {
 const title = {
     '/': 'Mes livres',
     '/home': 'Mes livres',
-    '/search': 'Rechercher',
     '/collection': 'Mes livres',
     '/add': 'Ajouter',
     '/book': 'Livre',

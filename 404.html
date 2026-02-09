@@ -1,7 +1,7 @@
 <script>
     // Used to make the spa work TODO: use hash instead of this hack 
     sessionStorage.setItem('redirect', location.pathname);
-    if (IS_GH_PAGES) {
+    if (window.location.hostname.includes('github.io')) {
         location.replace(`/${REPO_NAME}/`);
     } else {
         location.replace("/");

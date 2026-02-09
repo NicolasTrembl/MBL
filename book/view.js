@@ -20,9 +20,34 @@ export async function init() {
         return goBack();
     }
 
+    function normalizeTag(str) {
+        if (!str) return "";
+        return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
+    }
+
+    async function updateTagSuggestions() {
+        const datalist = document.getElementById('existingTags');
+        const tx = db.transaction("tags", "readonly");
+        const store = tx.objectStore("tags");
+        
+        const allTags = await new Promise(r => {
+            const req = store.getAll();
+            req.onsuccess = () => r(req.result);
+        });
+
+        datalist.innerHTML = allTags
+            .map(tag => `<option value="${tag.name}">`)
+            .join('');
+    }
+
     const bookmarkBtn = document.getElementById('bookmarkBtn');
     const bookmarkModal = document.getElementById('bookmarkModal');
     const bookmarkInput = document.getElementById('bookmarkInput');
+
+    
+    const tagModal = document.getElementById('tagModal');
+    const tagInput = document.getElementById('tagInput');
+    const tagsList = document.getElementById('tagsList');
 
     bookmarkBtn.addEventListener('click', () => {
         bookmarkInput.value = currentBook.bookmark || "";
@@ -69,6 +94,23 @@ export async function init() {
         if (book.cover instanceof Blob) {
             document.getElementById('prevCover').src = URL.createObjectURL(book.cover);
         }
+
+        const tagsContainer = document.getElementById('tagsList');
+        const addBtn = document.getElementById('openTagModalBtn');
+        tagsContainer.innerHTML = '';
+        
+        if (book.tags && book.tags.length > 0) {
+            book.tags.forEach(tag => {
+                const chip = document.createElement('span');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `
+                    ${tag} 
+                    <span class="remove-tag" data-tag="${tag}">&times;</span>
+                `;
+                tagsContainer.appendChild(chip);
+            });
+        }
+        tagsContainer.appendChild(addBtn);
     }
 
     const toggleEditBtn = document.getElementById('toggleEditBtn');
@@ -91,6 +133,51 @@ export async function init() {
         editActions.classList.toggle('hidden', !isEditing);
         editOverlay.classList.toggle('hidden', !isEditing);
         lucide.createIcons();
+    });
+
+    document.getElementById('openTagModalBtn').addEventListener('click', async () => {
+        tagInput.value = "";
+        await updateTagSuggestions();
+        tagModal.classList.remove('hidden');
+        tagInput.focus();
+    });
+
+    document.getElementById('confirmTag').addEventListener('click', async () => {
+        const rawValue = tagInput.value.trim();
+        if (!rawValue) return;
+        
+        const formattedTag = normalizeTag(rawValue);
+
+        if (!currentBook.tags) currentBook.tags = [];
+        
+        if (!currentBook.tags.includes(formattedTag)) {
+            currentBook.tags.push(formattedTag);
+            
+            const txBook = db.transaction("books", "readwrite");
+            await txBook.objectStore("books").put(currentBook);
+
+            const txTag = db.transaction("tags", "readwrite");
+            await txTag.objectStore("tags").put({ name: formattedTag });
+        }
+
+        tagModal.classList.add('hidden');
+        renderBook(currentBook);
+    });
+
+    tagsList.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('remove-tag')) {
+            const tagToRemove = e.target.getAttribute('data-tag');
+            currentBook.tags = currentBook.tags.filter(t => t !== tagToRemove);
+            
+            const tx = db.transaction("books", "readwrite");
+            await tx.objectStore("books").put(currentBook);
+            
+            renderBook(currentBook);
+        }
+    });
+
+    document.getElementById('cancelTag').addEventListener('click', () => {
+        tagModal.classList.add('hidden');
     });
 
     document.getElementById('detailStatus').addEventListener('change', async (e) => {
@@ -129,8 +216,6 @@ export async function init() {
         }
 
         await store.put(updatedData);
-        alert("Modifications enregistrées");
-        location.reload();
     });
 
     document.getElementById('coverWrapper').addEventListener('click', () => {
