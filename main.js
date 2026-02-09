@@ -89,7 +89,6 @@ async function router() {
 
 const mapping = { 
     'homeBtn': '/home', 
-    'searchBtn': '/search', 
     'addBtn': '/add', 
     'userBtn': '/user'
 };

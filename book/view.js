@@ -7,7 +7,6 @@ export async function init() {
 
     if (!bookId) return goBack();
 
-    // 1. Charger le livre
     try {
         const tx = db.transaction("books", "readonly");
         currentBook = await new Promise(r => {
@@ -21,17 +20,57 @@ export async function init() {
         return goBack();
     }
 
+    const bookmarkBtn = document.getElementById('bookmarkBtn');
+    const bookmarkModal = document.getElementById('bookmarkModal');
+    const bookmarkInput = document.getElementById('bookmarkInput');
+
+    bookmarkBtn.addEventListener('click', () => {
+        bookmarkInput.value = currentBook.bookmark || "";
+        bookmarkModal.classList.remove('hidden');
+        bookmarkInput.focus();
+    });
+
+    document.getElementById('cancelBookmark').addEventListener('click', () => {
+        bookmarkModal.classList.add('hidden');
+    });
+
+    document.getElementById('confirmBookmark').addEventListener('click', async () => {
+        const pageValue = parseInt(bookmarkInput.value);
+        
+        if (isNaN(pageValue) && bookmarkInput.value !== "") {
+            return alert("Veuillez entrer un nombre valide");
+        }
+
+        const tx = db.transaction("books", "readwrite");
+        const store = tx.objectStore("books");
+        
+        currentBook.bookmark = bookmarkInput.value === "" ? null : pageValue;
+        
+        await store.put(currentBook);
+        
+        bookmarkModal.classList.add('hidden');
+        renderBook(currentBook); 
+    });
+
     function renderBook(book) {
         document.getElementById('detailTitle').value = book.title;
         document.getElementById('detailAuthor').value = book.author;
         document.getElementById('detailYear').value = book.year;
         document.getElementById('detailStatus').value = book.status || "to-read";
+        
+        const bookmarkBtn = document.getElementById('bookmarkBtn');
+        if (book.bookmark) {
+            bookmarkBtn.innerHTML = `<span style="font-weight: bold; font-size: 1.1rem;">${book.bookmark}</span>`;
+        } else {
+            bookmarkBtn.innerHTML = `<i data-lucide="bookmark"></i>`;
+            lucide.createIcons();
+        }
+
         if (book.cover instanceof Blob) {
             document.getElementById('prevCover').src = URL.createObjectURL(book.cover);
         }
     }
 
-    // 2. Gestion du mode Édition
     const toggleEditBtn = document.getElementById('toggleEditBtn');
     const editActions = document.getElementById('editActions');
     const editOverlay = document.getElementById('editOverlay');
@@ -40,11 +79,9 @@ export async function init() {
     toggleEditBtn.addEventListener('click', () => {
         isEditing = !isEditing;
         
-        // Toggle icon
         toggleEditBtn.innerHTML = isEditing ? '<i data-lucide="x"></i>' : '<i data-lucide="edit-3"></i>';
         toggleEditBtn.style.background = isEditing ? '#dc3545' : '';
 
-        // Toggle inputs
         inputs.forEach(id => {
             const el = document.getElementById(id);
             el.readOnly = !isEditing;
@@ -56,7 +93,6 @@ export async function init() {
         lucide.createIcons();
     });
 
-    // 3. Sauvegarde automatique du STATUT seul
     document.getElementById('detailStatus').addEventListener('change', async (e) => {
         const newStatus = e.target.value;
         const tx = db.transaction("books", "readwrite");
@@ -68,10 +104,8 @@ export async function init() {
         
         book.status = newStatus;
         await store.put(book);
-        // Petit feedback visuel silencieux possible ici
     });
 
-    // 4. Sauvegarde complète (Mode Edit)
     document.getElementById('saveBookBtn').addEventListener('click', async () => {
         const title = document.getElementById('detailTitle').value.trim();
         if (!title) return alert("Le titre est requis");
@@ -88,7 +122,6 @@ export async function init() {
             dateUpdated: new Date().toISOString()
         };
 
-        // Gestion image si changée
         const coverSrc = document.getElementById('prevCover').src;
         if (coverSrc.startsWith('data:')) {
             const res = await fetch(coverSrc);
@@ -97,10 +130,9 @@ export async function init() {
 
         await store.put(updatedData);
         alert("Modifications enregistrées");
-        location.reload(); // Pour simplifier le reset du mode edit
+        location.reload();
     });
 
-    // 5. Gestion Image (uniquement en mode edit)
     document.getElementById('coverWrapper').addEventListener('click', () => {
         if (isEditing) document.getElementById('coverInput').click();
     });
@@ -114,20 +146,12 @@ export async function init() {
         }
     });
 
-    // 6. Suppression
     document.getElementById('deleteBookBtn').addEventListener('click', async () => {
         if (confirm("Supprimer ce livre ?")) {
             const tx = db.transaction("books", "readwrite");
             await tx.objectStore("books").delete(bookId);
             goBack();
         }
-    });
-
-    // 7. Boutons placeholders
-    document.querySelectorAll('.action-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            alert("Fonctionnalité à venir : " + btn.title);
-        });
     });
 
     function goBack() {

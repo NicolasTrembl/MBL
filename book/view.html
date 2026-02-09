@@ -4,11 +4,11 @@
     <div id="bookDetails" class="book-card">
         
         <div class="centering" >
-            <div id="coverWrapper" class="cover-wrapper" style="width: 150px; min-height: 210px; position: relative;">
+            <div id="coverWrapper" class="cover-wrapper view-cover">
                 <img id="prevCover" src="" alt="Couverture">
                 <input type="file" id="coverInput" accept="image/*" class="hidden">
-                <div id="editOverlay" class="hidden" style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border-radius: var(--r-radius);">
-                    <i data-lucide="camera" style="color: white;"></i>
+                <div id="editOverlay" class="hidden">
+                    <i data-lucide="camera"></i>
                 </div>
             </div>
         </div>
@@ -38,22 +38,35 @@
                 </select>
             </div>
 
-            <div class="secondary-actions" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s-gap); margin: var(--r-gap) 0;">
-                <button class="action-btn" title="Marque-page"><i data-lucide="bookmark"></i></button>
+            <div class="secondary-actions">
+                <button id="bookmarkBtn" class="action-btn" title="Marque-page">
+                    <i data-lucide="bookmark"></i>
+                </button>
                 <button class="action-btn" title="Review"><i data-lucide="star"></i></button>
                 <button class="action-btn" title="Annotation"><i data-lucide="message-square"></i></button>
             </div>
 
-            <div id="editActions" class="hidden" style="display: flex; gap: var(--s-gap); margin-top: var(--r-gap);">
+            <div id="bookmarkModal" class="hidden">
+                <div class="book-card book-card-modal">
+                    <h3 style="margin-bottom: 15px;">Numéro de page</h3>
+                    <input type="number" id="bookmarkInput" placeholder="Ex: 42">
+                    <div style="display: flex; gap: var(--s-gap);">
+                        <button id="cancelBookmark" class="btn-secondary" style="flex:1">Annuler</button>
+                        <button id="confirmBookmark" class="btn-success" style="flex:1">OK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editActions" class="hidden">
                 <button id="saveBookBtn" class="btn-success" style="flex: 2;">Enregistrer</button>
-                <button id="deleteBookBtn" style="flex: 1; background: #dc3545; border-radius: var(--s-radius); color: var(--font-color-on-bg);">
-                    <i data-lucide="trash-2"></i>
+                <button id="deleteBookBtn" style="flex: 1; padding: var(--s-padding); background: #dc3545; border-radius: var(--s-radius); color: var(--font-color-on-bg);">
+                    <i data-lucide="trash-2" style="height: 2.3em; "></i>
                 </button>
             </div>
         </div>
         
-        <div style="display: flex; justify-content: flex-end; width: 100%; max-width: 400px; margin-bottom: var(--s-gap);">
-            <button id="toggleEditBtn" class="btn-secondary" style="padding: 5px 10px; border-radius: var(--s-radius); color: var(--font-color-on-lg);">
+        <div class="editWrapper">
+            <button id="toggleEditBtn" class="btn-secondary">
                 <i data-lucide="edit-3"></i>
             </button>
     </div>
