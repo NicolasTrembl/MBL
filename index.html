@@ -16,8 +16,21 @@
         <div id="sentinel"> </div>
     </main>
 
+    <div id="overlay" class="overlay hidden"></div>
+
     <aside id="menu" class="drawer hidden_right">
-        <button id="closeMenuBtn"><i data-lucide="x" ></i></button>
+        <div class="drawer-header">
+            <h2 style="color: var(--font-color-default);">Menu</h2>
+            <button id="closeMenuBtn" class="drawer-btn"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="drawer-content">
+            <div class="menu-item" id="menuAnnotations">
+                <i data-lucide="notebook-pen"></i>
+                <span>Mes Annotations</span>
+            </div>
+            
+            </div>
     </aside>
     <nav>
         <button id="homeBtn"><i data-lucide="house"></i></button>

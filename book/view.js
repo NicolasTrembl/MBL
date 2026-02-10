@@ -40,6 +40,12 @@ export async function init() {
             .join('');
     }
 
+    const notesBtn = document.getElementById('notesBtn');
+    notesBtn.addEventListener('click', () => {
+        window.history.pushState({}, "", BASE_PATH + "/annotation?bookId=" + bookId);
+        router();
+    });
+
     const bookmarkBtn = document.getElementById('bookmarkBtn');
     const bookmarkModal = document.getElementById('bookmarkModal');
     const bookmarkInput = document.getElementById('bookmarkInput');

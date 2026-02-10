@@ -28,7 +28,8 @@ const routes = {
     '/collection': 'collection/home',
     '/add': 'book/add',
     '/book': 'book/view',
-    '/user': 'user/options'
+    '/user': 'user/options',
+    '/annotation': 'collection/annotation',
 };
 
 const title = {
@@ -37,7 +38,8 @@ const title = {
     '/collection': 'Mes livres',
     '/add': 'Ajouter',
     '/book': 'Livre',
-    '/user': 'Utilisateur'
+    '/user': 'Utilisateur',
+    '/annotation': 'Annotations'
 };
 
 let currentAbortController = null;
@@ -113,7 +115,6 @@ document.querySelectorAll('nav button').forEach(btn => {
     btn.addEventListener('click', (e) => {
         const id = e.currentTarget.id;
         const path = mapping[id] || '/home';
-        console.log("Clicked on", path);
         main.classList = [];
         
         window.history.pushState({}, "", BASE_PATH + path);
@@ -122,11 +123,21 @@ document.querySelectorAll('nav button').forEach(btn => {
 });
 
 const menu = document.getElementById('menu');
-document.getElementById('burgerBtn')?.addEventListener("click", () => {
+const overlay = document.getElementById('overlay');
+
+function toggleMenu() {
     menu.classList.toggle("hidden_right");
-});
-document.getElementById('closeMenuBtn')?.addEventListener("click", () => {
-    menu.classList.toggle("hidden_right");
+    overlay.classList.toggle("hidden");
+}
+
+document.getElementById('burgerBtn')?.addEventListener("click", toggleMenu);
+document.getElementById('closeMenuBtn')?.addEventListener("click", toggleMenu);
+overlay?.addEventListener("click", toggleMenu);
+
+document.getElementById('menuAnnotations')?.addEventListener("click", () => {
+    toggleMenu();
+    window.history.pushState({}, "", BASE_PATH + "/annotation");
+    router();
 });
 
 window.addEventListener("popstate", router);
