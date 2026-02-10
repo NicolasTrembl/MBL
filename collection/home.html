@@ -16,6 +16,16 @@
             <h3>Filtrer la collection</h3>
             
             <div class="input-wrapper">
+                <label>Trier par</label>
+                <select id="sortOrder" class="status-select">
+                    <option value="date-desc">Plus récent (ajout)</option>
+                    <option value="date-asc">Plus ancien (ajout)</option>
+                    <option value="rating-desc">Meilleure note</option>
+                    <option value="rating-asc">Moins bonne note</option>
+                </select>
+            </div>
+
+            <div class="input-wrapper">
                 <label>Statut</label>
                 <select id="filterStatus" class="status-select">
                     <option value="all">Tous les statuts</option>
@@ -25,18 +35,19 @@
                 </select>
             </div>
 
-            <div class="input-wrapper">
-                <label>Logique de recherche (Tags)</label>
-                <select id="tagFilterMode" class="status-select">
-                    <option value="and">ET (Tous les tags sélectionnés)</option>
-                    <option value="or">OU (Au moins un des tags)</option>
-                </select>
-            </div>
+            <div id="tagFilterSection">
+                <div class="input-wrapper">
+                    <label>Logique de recherche (Tags)</label>
+                    <select id="tagFilterMode" class="status-select">
+                        <option value="and">ET (Tous les tags)</option>
+                        <option value="or">OU (Au moins un)</option>
+                    </select>
+                </div>
 
-            <div class="input-wrapper">
-                <label>Tags</label>
-                <div id="filterTagsContainer" class="tags-container">
-                    </div>
+                <div class="input-wrapper">
+                    <label>Tags</label>
+                    <div id="filterTagsContainer" class="tags-container"></div>
+                </div>
             </div>
 
             <div style="display: flex; gap: var(--s-gap); margin-top: 15px;">

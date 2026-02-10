@@ -77,6 +77,111 @@ export async function init() {
         renderBook(currentBook); 
     });
 
+    let currentRating = 0;
+
+    const reviewBtn = document.getElementById('reviewBtn');
+    const reviewModal = document.getElementById('reviewModal');
+    const reviewText = document.getElementById('reviewText');
+    const starContainer = document.getElementById('starRating');
+
+    function setupStars() {
+        starContainer.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            const div = document.createElement('div');
+            const star = document.createElement('i');
+            star.setAttribute('data-lucide', 'star');
+            star.style.width = '24px';
+            star.style.color = 'var(--highlight-color)';
+            div.addEventListener('click', () => setRating(i));
+            div.appendChild(star);
+            starContainer.appendChild(div);
+
+        }
+        lucide.createIcons();
+    }
+
+    function setRating(rating) {
+        currentRating = rating;
+        const stars = starContainer.querySelectorAll('svg');
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.style.fill = '#ffc107';
+                star.style.color = '#ffc107';
+            } else {
+                star.style.fill = 'none';
+                star.style.color = 'var(--highlight-color)';
+            }
+        });
+    }
+
+    reviewBtn.addEventListener('click', async () => {
+        const tx = db.transaction("reviews", "readonly");
+        const store = tx.objectStore("reviews");
+        
+        const allReviews = await new Promise(r => {
+            const req = store.getAll();
+            req.onsuccess = () => r(req.result);
+        });
+        
+        const existingReview = allReviews.find(r => r.bookId === bookId);
+
+        setupStars();
+        if (existingReview) {
+            setRating(existingReview.rating);
+            reviewText.value = existingReview.comment || "";
+            reviewBtn.dataset.reviewId = existingReview.id;
+        } else {
+            setRating(0);
+            reviewText.value = "";
+            delete reviewBtn.dataset.reviewId;
+        }
+
+        reviewModal.classList.remove('hidden');
+    });
+
+    document.getElementById('cancelReview').addEventListener('click', () => {
+        reviewModal.classList.add('hidden');
+    });
+
+    document.getElementById('confirmReview').addEventListener('click', async () => {
+        if (currentRating === 0) return alert("Veuillez donner une note");
+
+        const tx = db.transaction("reviews", "readwrite");
+        const store = tx.objectStore("reviews");
+
+        const reviewData = {
+            bookId: bookId,
+            rating: currentRating,
+            comment: reviewText.value.trim(),
+            date: new Date().toISOString()
+        };
+
+        if (reviewBtn.dataset.reviewId) {
+            reviewData.id = parseInt(reviewBtn.dataset.reviewId);
+        }
+
+        await store.put(reviewData);
+        reviewModal.classList.add('hidden');
+        
+        updateReviewIcon(currentRating);
+    });
+
+    function updateReviewIcon(rating) {
+        if (rating > 0) {
+            reviewBtn.innerHTML = `<span style="font-weight: bold; color: #ffc107; align-content: center; font-size: large;">${rating}</span>`;
+        } else {
+            reviewBtn.innerHTML = `<i data-lucide="star"></i>`;
+            lucide.createIcons();
+        }
+    }
+
+    const txRev = db.transaction("reviews", "readonly");
+    const reqRev = txRev.objectStore("reviews").getAll();
+    reqRev.onsuccess = () => {
+        const rev = reqRev.result.find(r => r.bookId === bookId);
+        if (rev) updateReviewIcon(rev.rating);
+    };
+
     function renderBook(book) {
         document.getElementById('detailTitle').value = book.title;
         document.getElementById('detailAuthor').value = book.author;

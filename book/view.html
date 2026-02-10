@@ -59,7 +59,9 @@
                 <button id="bookmarkBtn" class="action-btn" title="Marque-page">
                     <i data-lucide="bookmark"></i>
                 </button>
-                <button class="action-btn" title="Review"><i data-lucide="star"></i></button>
+                <button id="reviewBtn" class="action-btn" title="Review">
+                    <i data-lucide="star"></i>
+                </button>
                 <button class="action-btn" title="Annotation"><i data-lucide="message-square"></i></button>
             </div>
 
@@ -70,6 +72,23 @@
                     <div style="display: flex; gap: var(--s-gap);">
                         <button id="cancelBookmark" class="btn-secondary" style="flex:1">Annuler</button>
                         <button id="confirmBookmark" class="btn-success" style="flex:1">OK</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reviewModal" class="hidden modal">
+                <div class="book-card book-card-modal" style="max-width: 400px;">
+                    <h3 style="margin-bottom: 10px;">Note et Avis</h3>
+                    
+                    <div id="starRating" class="star-rating" style="display: flex; justify-content: space-between; margin-bottom: 15px; cursor: pointer;">
+                        </div>
+                    
+                    <textarea id="reviewText" placeholder="Votre avis sur ce livre..." 
+                            style="width: 100%; height: 100px; padding: 8px; border-radius: var(--s-radius); margin-bottom: 15px; border: 1px solid var(--highlight-color); background: var(--card-background-color); color: var(--font-color-default); font-family: inherit; resize: none;"></textarea>
+
+                    <div style="display: flex; gap: var(--s-gap);">
+                        <button id="cancelReview" class="btn-secondary" style="flex:1">Annuler</button>
+                        <button id="confirmReview" class="btn-success" style="flex:1">Enregistrer</button>
                     </div>
                 </div>
             </div>
