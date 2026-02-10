@@ -4,13 +4,31 @@ const BASE_PATH = IS_GH_PAGES ? REPO_NAME : '';
 
 const main = document.getElementById("main");
 const h1 = document.getElementById("title");
+
+function loadSavedTheme() {
+    const appliedThemeColors = localStorage.getItem('appliedThemeColors');
+    
+    if (appliedThemeColors) {
+        try {
+            const colors = JSON.parse(appliedThemeColors);
+            const root = document.documentElement;
+            
+            Object.entries(colors).forEach(([property, value]) => {
+                root.style.setProperty(property, value);
+            });
+        } catch (err) {
+            console.error("Erreur lors du chargement du thème:", err);
+        }
+    }
+}
+
 const routes = {
     '/': 'collection/home',
     '/home': 'collection/home',
     '/collection': 'collection/home',
     '/add': 'book/add',
     '/book': 'book/view',
-    '/user': 'user/index'
+    '/user': 'user/options'
 };
 
 const title = {
@@ -118,5 +136,7 @@ window.addEventListener("beforeunload", () => {
         window.currentModuleCleanup();
     }
 });
+
+loadSavedTheme();
 
 window.onload = router;

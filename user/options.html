@@ -1,0 +1,103 @@
+<div class="options-container">
+    <section class="options-section">
+        <h2>Apparence</h2>
+        <div class="theme-selector">
+            <div class="theme-option" data-theme="default">
+                <div class="theme-preview-circle">
+                    <div class="circle-half" style="background: #181B1E;"></div>
+                    <div class="circle-quarter-top" style="background: #5F6266;"></div>
+                    <div class="circle-quarter-bottom" style="background: #A5A9AE;"></div>
+                </div>
+                <p class="theme-name">Sombre</p>
+            </div>
+
+            <div class="theme-option" data-theme="light">
+                <div class="theme-preview-circle">
+                    <div class="circle-half" style="background: #F8F9FA;"></div>
+                    <div class="circle-quarter-top" style="background: #E9ECEF;"></div>
+                    <div class="circle-quarter-bottom" style="background: #FFFFFF;"></div>
+                </div>
+                <p class="theme-name">Clair</p>
+            </div>
+
+            <div class="theme-option" data-theme="ocean">
+                <div class="theme-preview-circle">
+                    <div class="circle-half" style="background: #0A2463;"></div>
+                    <div class="circle-quarter-top" style="background: #1E3A5F;"></div>
+                    <div class="circle-quarter-bottom" style="background: #3E92CC;"></div>
+                </div>
+                <p class="theme-name">Océan</p>
+            </div>
+
+            <div class="theme-option" data-theme="forest">
+                <div class="theme-preview-circle">
+                    <div class="circle-half" style="background: #1B4332;"></div>
+                    <div class="circle-quarter-top" style="background: #2D6A4F;"></div>
+                    <div class="circle-quarter-bottom" style="background: #52B788;"></div>
+                </div>
+                <p class="theme-name">Forêt</p>
+            </div>
+
+            <div class="theme-option" data-theme="sunset">
+                <div class="theme-preview-circle">
+                    <div class="circle-half" style="background: #2B1B17;"></div>
+                    <div class="circle-quarter-top" style="background: #5C3D2E;"></div>
+                    <div class="circle-quarter-bottom" style="background: #D4A574;"></div>
+                </div>
+                <p class="theme-name">Coucher de soleil</p>
+            </div>
+
+            <div class="theme-option" data-theme="custom">
+                <div class="theme-preview-circle custom-preview">
+                    <div class="circle-half" id="ch-custom" style="background-color: var(--background-color);"></div>
+                    <div class="circle-quarter-top" id="cqt-custom" style="background-color: var(--background-variant);"></div>
+                    <div class="circle-quarter-bottom" id="cqb-custom" style="background-color: var(--card-background-color);"></div>
+                </div>
+                <p class="theme-name">Personnalisé</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="options-section custom-theme-editor hidden">
+        <h2>Personnaliser le thème</h2>
+        <div class="color-pickers">
+            <div class="color-picker-group">
+                <label for="bgColor">Couleur de fond</label>
+                <input type="color" id="bgColor" value="#181B1E">
+            </div>
+            <div class="color-picker-group">
+                <label for="variantColor">Couleur variante</label>
+                <input type="color" id="variantColor" value="#5F6266">
+            </div>
+            <div class="color-picker-group">
+                <label for="cardColor">Couleur des cartes</label>
+                <input type="color" id="cardColor" value="#A5A9AE">
+            </div>
+            <div class="color-picker-group">
+                <label for="highlightColor">Couleur focus</label>
+                <input type="color" id="highlightColor" value="#CFD1D4">
+            </div>
+            <div class="color-picker-group">
+                <label for="lightColor">Couleur claire</label>
+                <input type="color" id="lightColor" value="#F8F9FA">
+            </div>
+            <div class="color-picker-group">
+                <label>Couleur du texte</label>
+                <input type="color" id="fontDefaultColor" value="#ffffff">
+            </div>
+            <div class="color-picker-group">
+                <label>Variante du texte</label>
+                <input type="color" id="fontLgColor" value="#ffffff">
+            </div>
+        </div>
+        <button id="applyCustomTheme" class="btn-success">Appliquer le thème personnalisé</button>
+    </section>
+
+    <section class="options-section">
+        <h2>À propos</h2>
+        <div class="about-info">
+            <p><strong>Version:</strong> 0.0.1</p>
+            <p><strong>Application:</strong> MBL WIP</p>
+        </div>
+    </section>
+</div>
