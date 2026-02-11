@@ -5,6 +5,19 @@ const BASE_PATH = IS_GH_PAGES ? REPO_NAME : '';
 const main = document.getElementById("main");
 const h1 = document.getElementById("title");
 
+// TODO: Move to utils script
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        if (window.XLSX) return resolve(); // Déjà chargé
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
 function loadSavedTheme() {
     const appliedThemeColors = localStorage.getItem('appliedThemeColors');
     

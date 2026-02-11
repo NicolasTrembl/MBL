@@ -69,6 +69,9 @@ function applyTheme(themeName, customColors = null) {
 export function init() {
     const themeOptions = document.querySelectorAll('.theme-option');
     const customEditor = document.querySelector('.custom-theme-editor');
+
+    document.getElementById('exportJSON')?.addEventListener('click', handleExportJSON);
+    document.getElementById('exportExcel')?.addEventListener('click', handleExportExcel);
     
     const savedCustom = JSON.parse(localStorage.getItem('customTheme'));
     if (savedCustom) {

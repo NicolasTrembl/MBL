@@ -75,7 +75,10 @@ export async function init() {
 
     searchInput.oninput = render;
 
-    document.getElementById('openFilterBtn').onclick = () => document.getElementById('filterModal').classList.remove('hidden');
+    document.getElementById('addNoteBtn').onclick = () => {
+        if (allBooks.length === 0) return;
+        noteModal.classList.remove('hidden');
+    };
     document.getElementById('applyFilters').onclick = () => {
         document.getElementById('filterModal').classList.add('hidden');
         render();
