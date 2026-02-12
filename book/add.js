@@ -177,17 +177,33 @@ export function init() {
 
     async function startScanner() {
         if (isScanning || !html5QrCode) return;
+
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
         const config = { 
-            fps: 60, 
-            qrbox: { width: 280, height: 120 },
-            focusMode: "continuous",
-            aspectRatio: 1.777778,
-            disableFlip: true,
-            experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+            fps: 15,
+            qrbox: (viewfinderWidth, viewfinderHeight) => {
+                const w = Math.min(Math.round(viewfinderWidth * 0.85), 400);
+                const h = Math.round(w * 0.35);
+                return { width: w, height: h };
+            },
+            aspectRatio: isMobile ? 0.5625 : 1.777778,
+            experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+            videoConstraints: {
+                facingMode: "environment",
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 },
+                focusMode: { ideal: "continuous" },
+                advanced: [{ focusMode: "continuous" }]
+            }
         };
 
         try {
-            await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess
+            );
             isScanning = true;
             const dash = document.getElementById('reader__dashboard');
             if (dash) dash.style.display = 'none';
@@ -210,18 +226,64 @@ export function init() {
         }
     }
 
+    function ean13ToIsbn(ean) {
+        const digits = ean.replace(/\D/g, "");
+        if (digits.length === 13 && (digits.startsWith("978") || digits.startsWith("979"))) {
+            return digits;
+        }
+        if (digits.length === 10) {
+            return digits;
+        }
+        return digits;
+    }
+
+    function isbn13ToIsbn10(isbn13) {
+        if (isbn13.length !== 13 || !isbn13.startsWith("978")) return null;
+        const core = isbn13.slice(3, 12);
+        let sum = 0;
+        for (let i = 0; i < 9; i++) sum += (10 - i) * parseInt(core[i]);
+        const check = (11 - (sum % 11)) % 11;
+        return core + (check === 10 ? "X" : check.toString());
+    }
+
     async function onScanSuccess(decodedText) {
         console.log("Code scanné:", decodedText);
-        try {
-            const url = `https://catalogue.bnf.fr/api/sru?version=1.2&operation=searchRetrieve&query=bib.isbn%20all%20%22${decodedText}%22`;
+        const isbn = ean13ToIsbn(decodedText);
+        console.log("ISBN normalisé:", isbn);
+
+        const showError = () => {
+            const errEl = document.getElementById('scanError');
+            if (errEl) {
+                errEl.classList.remove('hidden');
+                setTimeout(() => errEl.classList.add('hidden'), 3000);
+            }
+        };
+
+        const queryBnf = async (isbnToSearch) => {
+            const url = `https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.isbn%20all%20%22${isbnToSearch}%22`;
             const res = await fetch(url);
             const xmlText = await res.text();
-            const books = parseBnfXml(xmlText);
+            return parseBnfXml(xmlText);
+        };
+
+        try {
+            let books = await queryBnf(isbn);
+
+            if (books.length === 0 && isbn.length === 13) {
+                const isbn10 = isbn13ToIsbn10(isbn);
+                if (isbn10) {
+                    console.log("Fallback ISBN-10:", isbn10);
+                    books = await queryBnf(isbn10);
+                }
+            }
 
             if (books.length > 0) {
                 fillData(books[0]);
                 shouldBeScanning = false;
                 await stopScanner();
+            } else {
+                console.warn("Aucun livre trouvé pour cet ISBN:", isbn);
+                showError();
             }
         } catch (err) {
             console.error("Erreur API BnF:", err);
@@ -236,10 +298,13 @@ export function init() {
         };
     }
 
-    document.getElementById('saveBookBtn')?.addEventListener('click', async () => {
+    const saveBtn = document.getElementById('saveBookBtn');
+    saveBtn?.addEventListener('click', async () => {
         const title = document.getElementById('detailTitle').value.trim();
         const author = document.getElementById('detailAuthor').value.trim();
         const year = document.getElementById('detailYear').value.trim();
+
+        saveBtn.innerText = "Enregistrement..."
 
         if (!title) {
             alert("Le titre est requis !");
