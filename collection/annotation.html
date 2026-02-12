@@ -11,49 +11,9 @@
 
     <div id="annotationList" class="gridView" style="grid-template-columns: 1fr; grid-auto-rows: unset;"></div>
 
-    <div id="filterModal" class="hidden modal">
-        <div class="book-card book-card-modal">
-            <h3>Filtrer les notes</h3>
-            
-            <div class="input-wrapper">
-                <label>Livre spécifique</label>
-                <select id="filterBookSelect" class="status-select">
-                    <option value="all">Tous les livres</option>
-                    </select>
-            </div>
-
-            <div class="input-wrapper">
-                <label>Trier par</label>
-                <select id="sortOrder" class="status-select">
-                    <option value="date-desc">Plus récent</option>
-                    <option value="date-asc">Plus ancien</option>
-                    <option value="page-asc">Numéro de page (croissant)</option>
-                </select>
-            </div>
-
-            <div class="input-wrapper">
-                <label>Contenu</label>
-                <select id="filterType" class="status-select">
-                    <option value="all">Tout</option>
-                    <option value="has-image">Avec image</option>
-                    <option value="has-quote">Avec citation</option>
-                </select>
-            </div>
-
-            <div style="display: flex; gap: var(--s-gap); margin-top: 15px;">
-                <button id="resetFilters" class="btn-secondary" style="flex:1">Réinitialiser</button>
-                <button id="applyFilters" class="btn-success" style="flex:2">Appliquer</button>
-            </div>
-        </div>
-    </div>
-
-    <button id="addNoteBtn" class="fab-btn" title="Ajouter une note">
-        <i data-lucide="plus"></i>
-    </button>
-
     <div id="noteModal" class="hidden modal">
         <div class="book-card book-card-modal">
-            <h3>Nouvelle Annotation</h3>
+            <h3 id="modalTitle" style="margin-bottom: 15px; color: var(--background-color);">Nouvelle Annotation</h3>
             
             <div class="input-wrapper">
                 <label>Livre</label>
@@ -74,16 +34,25 @@
                 <label>Page</label>
                 <input type="number" id="notePage" placeholder="Ex: 42">
             </div>
-            
+
             <div class="input-wrapper" style="flex: 2;">
                 <label>Image</label>
-                <input type="file" id="noteImage" accept="image/*" class="status-select">
+                <input type="file" id="noteImage" accept="image/*">
             </div>
 
-            <div style="display: flex; gap: var(--s-gap); margin-top: 15px;">
-                <button id="closeNoteModal" class="btn-secondary" style="flex:1">Annuler</button>
-                <button id="saveNoteBtn" class="btn-success" style="flex:2">Enregistrer</button>
+            <div style="display: flex; flex-direction: column; gap: var(--s-gap); margin-top: 10px;">
+                <div style="display: flex; gap: var(--s-gap);">
+                    <button id="closeNoteModal" class="btn-secondary" style="flex:1">Annuler</button>
+                    <button id="saveNoteBtn" class="btn-success" style="flex:2">Enregistrer</button>
+                </div>
+                <button id="deleteNoteBtn" class="btn-danger hidden">
+                    <i data-lucide="trash-2" style="width: 16px; margin-right: 5px;"></i> Supprimer la note
+                </button>
             </div>
         </div>
     </div>
+
+    <button id="addNoteBtn" class="fab-btn">
+        <i data-lucide="plus"></i>
+    </button>
 </div>

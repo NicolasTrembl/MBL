@@ -1,151 +1,151 @@
 let allAnnotations = [];
 let allBooks = [];
+let editingNoteId = null;
 
 export async function init() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const bookIdFromUrl = urlParams.get('bookId');
-    const container = document.getElementById("annotationList");
     const db = await openDB();
-
-    const searchInput = document.getElementById('searchInput');
-    const filterBookSelect = document.getElementById('filterBookSelect');
-    const typeFilter = document.getElementById('filterType');
-    const sortOrder = document.getElementById('sortOrder');
+    const container = document.getElementById("annotationList");
     
-    const noteModal = document.getElementById('noteModal');
-    const bookSelectAdd = document.getElementById('noteBookSelect');
-    const noteText = document.getElementById('noteText');
-    const noteQuote = document.getElementById('noteQuote');
-    const notePage = document.getElementById('notePage');
-    const noteImage = document.getElementById('noteImage');
+    const modal = document.getElementById('noteModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const deleteBtn = document.getElementById('deleteNoteBtn');
+    const bookSelect = document.getElementById('noteBookSelect');
+    
+    const fields = {
+        text: document.getElementById('noteText'),
+        quote: document.getElementById('noteQuote'),
+        page: document.getElementById('notePage'),
+        image: document.getElementById('noteImage')
+    };
 
-    const [notes, books] = await Promise.all([
-        new Promise(r => {
-            const req = db.transaction("annotations", "readonly").objectStore("annotations").getAll();
-            req.onsuccess = () => r(req.result);
-        }),
-        new Promise(r => {
-            const req = db.transaction("books", "readonly").objectStore("books").getAll();
-            req.onsuccess = () => r(req.result);
-        })
-    ]);
-
-    allAnnotations = notes;
-    allBooks = books;
-
-    const bookOptions = allBooks.map(b => `<option value="${b.id}">${b.title}</option>`).join('');
-    filterBookSelect.innerHTML = `<option value="all">Tous les livres</option>` + bookOptions;
-    bookSelectAdd.innerHTML = bookOptions;
-
-    if (bookIdFromUrl) {
-        filterBookSelect.value = bookIdFromUrl;
-        bookSelectAdd.value = bookIdFromUrl;
-    }
+    const loadData = async () => {
+        const [notes, books] = await Promise.all([
+            new Promise(r => db.transaction("annotations").objectStore("annotations").getAll().onsuccess = e => r(e.target.result)),
+            new Promise(r => db.transaction("books").objectStore("books").getAll().onsuccess = e => r(e.target.result))
+        ]);
+        allAnnotations = notes;
+        allBooks = books;
+        
+        bookSelect.innerHTML = allBooks.map(b => `<option value="${b.id}">${b.title}</option>`).join('');
+    };
 
     const render = () => {
-        const query = searchInput.value.toLowerCase();
-        const selectedBookId = filterBookSelect.value;
-        const selectedType = typeFilter.value;
-        const selectedSort = sortOrder.value;
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        
+        const filtered = allAnnotations.filter(n => 
+            n.text.toLowerCase().includes(query) || (n.quote && n.quote.toLowerCase().includes(query))
+        ).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        let filtered = allAnnotations.filter(note => {
-            const matchesBook = selectedBookId === 'all' || note.bookId === selectedBookId;
-            const matchesSearch = note.text.toLowerCase().includes(query) || 
-                                 (note.quote && note.quote.toLowerCase().includes(query));
-            const matchesType = selectedType === 'all' || 
-                               (selectedType === 'has-image' && note.image) ||
-                               (selectedType === 'has-quote' && note.quote);
-
-            return matchesBook && matchesSearch && matchesType;
-        });
-
-        filtered.sort((a, b) => {
-            if (selectedSort === 'date-desc') return new Date(b.date) - new Date(a.date);
-            if (selectedSort === 'date-asc') return new Date(a.date) - new Date(b.date);
-            if (selectedSort === 'page-asc') return (a.page || 0) - (b.page || 0);
-            return 0;
-        });
-
-        container.innerHTML = filtered.length > 0 
+        container.innerHTML = filtered.length 
             ? filtered.map(note => createNoteCard(note)).join('')
-            : `<p style="text-align:center; padding:20px; color: var(--background-variant);">Aucune note trouvée.</p>`;
+            : `<p style="text-align:center; padding:40px; opacity:0.5;">Aucune note ici...</p>`;
         
         lucide.createIcons();
+
+        document.querySelectorAll('.edit-trigger').forEach(btn => {
+            btn.onclick = () => openModal(Number(btn.dataset.id)); 
+        });
     };
 
-    searchInput.oninput = render;
-
-    document.getElementById('addNoteBtn').onclick = () => {
-        if (allBooks.length === 0) return;
-        noteModal.classList.remove('hidden');
+    const openModal = (id = null) => {
+        editingNoteId = id; 
+        if (id) {
+            const note = allAnnotations.find(n => n.id === id);
+            modalTitle.innerText = "Modifier l'annotation";
+            deleteBtn.classList.remove('hidden');
+            bookSelect.value = note.bookId;
+            fields.text.value = note.text;
+            fields.quote.value = note.quote || "";
+            fields.page.value = note.page || "";
+        } else {
+            modalTitle.innerText = "Nouvelle Annotation";
+            deleteBtn.classList.add('hidden');
+            fields.text.value = ""; fields.quote.value = ""; fields.page.value = ""; fields.image.value = "";
+        }
+        modal.classList.remove('hidden');
     };
-    document.getElementById('applyFilters').onclick = () => {
-        document.getElementById('filterModal').classList.add('hidden');
-        render();
-    };
-
-    document.getElementById('resetFilters').onclick = () => {
-        filterBookSelect.value = 'all';
-        typeFilter.value = 'all';
-        sortOrder.value = 'date-desc';
-        render();
-    };
-
-    document.getElementById('addNoteBtn').onclick = () => noteModal.classList.remove('hidden');
-    document.getElementById('closeNoteModal').onclick = () => noteModal.classList.add('hidden');
 
     document.getElementById('saveNoteBtn').onclick = async () => {
-        if (!noteText.value.trim()) return alert("La note est vide !");
+        if (!fields.text.value.trim()) return alert("Veuillez écrire une note.");
 
-        const newNote = {
-            bookId: bookSelectAdd.value,
-            text: noteText.value.trim(),
-            quote: noteQuote.value.trim(),
-            page: parseInt(notePage.value) || null,
-            image: noteImage.files[0] || null,
-            date: new Date().toISOString()
+        const noteData = {
+            bookId: bookSelect.value,
+            text: fields.text.value.trim(),
+            quote: fields.quote.value.trim(),
+            page: parseInt(fields.page.value) || null,
+            date: editingNoteId ? allAnnotations.find(n => n.id === editingNoteId).date : new Date().toISOString()
         };
 
+        if (fields.image.files[0]) {
+            noteData.image = fields.image.files[0];
+        } else if (editingNoteId) {
+            noteData.image = allAnnotations.find(n => n.id === editingNoteId).image;
+        }
+
         const tx = db.transaction("annotations", "readwrite");
-        const req = tx.objectStore("annotations").add(newNote);
+        const store = tx.objectStore("annotations");
         
-        req.onsuccess = () => {
-            allAnnotations.push({ ...newNote, id: req.result });
-            noteModal.classList.add('hidden');
-            noteText.value = ""; noteQuote.value = ""; notePage.value = ""; noteImage.value = "";
-            render();
+        if (editingNoteId) {
+            noteData.id = editingNoteId;
+            store.put(noteData).onsuccess = () => {
+                const idx = allAnnotations.findIndex(n => n.id === editingNoteId);
+                allAnnotations[idx] = noteData;
+                finishUpdate();
+            };
+        } else {
+            const req = store.add(noteData);
+            req.onsuccess = () => {
+                noteData.id = req.result;
+                allAnnotations.push(noteData);
+                finishUpdate();
+            };
+        }
+    };
+
+    deleteBtn.onclick = async () => {
+        if (!confirm("Supprimer définitivement cette note ?")) return;
+        
+        const idToDelete = Number(editingNoteId); 
+        
+        const tx = db.transaction("annotations", "readwrite");
+        tx.objectStore("annotations").delete(idToDelete).onsuccess = () => {
+            allAnnotations = allAnnotations.filter(n => n.id !== idToDelete);
+            finishUpdate();
         };
     };
 
+    const finishUpdate = () => {
+        modal.classList.add('hidden');
+        render();
+    };
+
+    document.getElementById('addNoteBtn').onclick = () => openModal();
+    document.getElementById('closeNoteModal').onclick = () => modal.classList.add('hidden');
+    document.getElementById('searchInput').oninput = render;
+
+    await loadData();
     render();
 }
 
 function createNoteCard(note) {
     const book = allBooks.find(b => b.id === note.bookId);
     const dateStr = new Date(note.date).toLocaleDateString('fr-FR');
-    
-    let imageHtml = "";
-    if (note.image) {
-        const url = URL.createObjectURL(note.image);
-        imageHtml = `<img src="${url}" style="width:100%; border-radius:var(--s-radius); margin-bottom:8px; display:block;">`;
-    }
+    const imageHtml = note.image ? `<img src="${URL.createObjectURL(note.image)}" style="width:100%; border-radius:8px; margin: 10px 0;">` : "";
 
     return `
         <div class="book-card note-card">
             <div class="note-card-header">
                 <span class="note-title">${book ? book.title : 'Livre inconnu'}</span>
-                <span>${dateStr}</span>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span>${dateStr}</span>
+                    <button class="edit-trigger" data-id="${note.id}" style="color: var(--background-variant);">
+                        <i data-lucide="edit-3" style="width:16px;"></i>
+                    </button>
+                </div>
             </div>
             ${imageHtml}
-            ${note.quote ? `
-                <blockquote>
-                    "${note.quote}"
-                </blockquote>` : ''}
-            
-            <p class="note-text">
-                ${note.text}
-            </p>
-
+            ${note.quote ? `<blockquote>"${note.quote}"</blockquote>` : ''}
+            <p class="note-text">${note.text}</p>
             ${note.page ? `<div class="note-page">Page ${note.page}</div>` : ''}
         </div>
     `;
