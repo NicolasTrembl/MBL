@@ -59,6 +59,10 @@ header {
     background-color: var(--background-variant);
 }
 
+h1 {
+    font-size: large;
+}
+
 main {
     flex: 1;
     
