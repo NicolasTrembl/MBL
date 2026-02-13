@@ -112,21 +112,33 @@ export function init() {
         document.getElementById('detailTitle').value = book.title || "";
         document.getElementById('detailAuthor').value = book.author || "";
         document.getElementById('detailYear').value = book.year || "";
-        
+
         const img = document.getElementById('prevCover');
-        img.onerror = () => {
-            if (book.isbn && img.src.includes('openlibrary')) {
+
+        const tryGoogle = () => {
+            if (book.isbn) {
+                img.onload = null;
+                img.onerror = () => { img.src = ""; };
                 img.src = `https://books.google.com/books/content/images/frontcover/${book.isbn}?fife=w400-h600`;
+            } else {
+                img.src = "";
             }
         };
+
         if (book.isbn) {
+            img.onerror = tryGoogle;
+            img.onload = () => {
+                if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+                    tryGoogle();
+                }
+            };
             img.src = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
         } else {
+            img.onload = null;
+            img.onerror = null;
             img.src = "";
         }
     }
-
-   
 
     const bookInput = document.getElementById('bookInput');
     const suggestions = document.getElementById('suggestions');
@@ -254,6 +266,7 @@ export function init() {
         const showError = () => {
             const errEl = document.getElementById('scanError');
             if (errEl) {
+                errEl.innerText = `Livre (${isbn})\nnon trouvé`;
                 errEl.classList.remove('hidden');
                 setTimeout(() => errEl.classList.add('hidden'), 3000);
             }

@@ -18,6 +18,16 @@ function loadScript(src) {
     });
 }
 
+function updateMetaThemeColor(color) {
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = "theme-color";
+        document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', color);
+}
+
 function loadSavedTheme() {
     const appliedThemeColors = localStorage.getItem('appliedThemeColors');
     
@@ -28,6 +38,9 @@ function loadSavedTheme() {
             
             Object.entries(colors).forEach(([property, value]) => {
                 root.style.setProperty(property, value);
+                if (property === '--background-color') {
+                    updateMetaThemeColor(value);
+                }
             });
         } catch (err) {
             console.error("Erreur lors du chargement du thème:", err);
@@ -164,3 +177,20 @@ window.addEventListener("beforeunload", () => {
 loadSavedTheme();
 
 window.onload = router;
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        if (confirm("Nouvelle version disponible. Recharger ?")) {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+        });
+    });
+}

@@ -1,0 +1,25 @@
+{
+    "short_name": "MBL",
+    "name": "Bibliothèque numérique",
+    "description": "Gestionnaire de bibliothèque numérique",
+    "icons": [
+        {
+            "src": "assets/icons/icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "assets/icons/icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "./index.html",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay"],
+    "theme_color": "#ffffff",
+    "background_color": "#181B1E",
+    "lang": "fr-FR",
+    "scope": "./",
+    "orientation": "portrait-primary"
+}
