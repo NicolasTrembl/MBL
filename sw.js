@@ -23,14 +23,18 @@ self.addEventListener('install', (e) => {
     self.skipWaiting();
 });
 
-self.addEventListener('fetch', (e) => {
-    e.respondWith(
-        fetch(e.request)
-            .then(res => {
-                const cleanRes = res.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(e.request, cleanRes));
-                return res;
+self.addEventListener('fetch', (event) => {
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request).catch(() => {
+                return caches.match('/MBL/index.html');
             })
-            .catch(() => caches.match(e.request))
-    );
+        );
+    } else {
+        event.respondWith(
+            caches.match(event.request).then((response) => {
+                return response || fetch(event.request);
+            })
+        );
+    }
 });

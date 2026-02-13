@@ -19,7 +19,7 @@
     "theme_color": "#ffffff",
     "background_color": "#181B1E",
     "lang": "fr-FR",
-    "start_url": "/MBL/index.html",
+    "start_url": "/MBL/",
     "scope": "/MBL/",
     "orientation": "portrait-primary"
 }
