@@ -59,7 +59,6 @@ export async function init() {
 
         gridView.innerHTML = "";
         filtered.forEach(book => gridView.appendChild(createBookCard(book)));
-        lucide.createIcons();
     };
 
     const checkTagsAvailability = async () => {

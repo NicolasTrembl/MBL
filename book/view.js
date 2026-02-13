@@ -94,16 +94,11 @@ export async function init() {
         starContainer.innerHTML = '';
         for (let i = 1; i <= 10; i++) {
             const div = document.createElement('div');
-            const star = document.createElement('i');
-            star.setAttribute('data-lucide', 'star');
-            star.style.width = '24px';
-            star.style.color = 'var(--highlight-color)';
+            const star = '<svg xmlns="http://www.w3.org/2000/svg" style="color=var(--highlight-color);" width="24px" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>';
             div.addEventListener('click', () => setRating(i));
-            div.appendChild(star);
+            div.innerHTML += star;
             starContainer.appendChild(div);
-
         }
-        lucide.createIcons();
     }
 
     function setRating(rating) {
@@ -176,8 +171,7 @@ export async function init() {
         if (rating > 0) {
             reviewBtn.innerHTML = `<span style="font-weight: bold; color: #ffc107; align-content: center; font-size: large;">${rating}</span>`;
         } else {
-            reviewBtn.innerHTML = `<i data-lucide="star"></i>`;
-            lucide.createIcons();
+            reviewBtn.innerHTML = `'<svg xmlns="http://www.w3.org/2000/svg" style="color=var(--highlight-color);" width="24px" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>'`;
         }
     }
 
@@ -198,8 +192,7 @@ export async function init() {
         if (book.bookmark) {
             bookmarkBtn.innerHTML = `<span style="font-weight: bold; font-size: 1.1rem;">${book.bookmark}</span>`;
         } else {
-            bookmarkBtn.innerHTML = `<i data-lucide="bookmark"></i>`;
-            lucide.createIcons();
+            bookmarkBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark-icon lucide-bookmark"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/></svg>`;
         }
 
         if (book.cover instanceof Blob) {
@@ -232,7 +225,10 @@ export async function init() {
     toggleEditBtn.addEventListener('click', () => {
         isEditing = !isEditing;
         
-        toggleEditBtn.innerHTML = isEditing ? '<i data-lucide="x"></i>' : '<i data-lucide="edit-3"></i>';
+        toggleEditBtn.innerHTML = 
+            isEditing 
+                ? '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>' 
+                : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-line-icon lucide-pen-line"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>';
         toggleEditBtn.style.background = isEditing ? '#dc3545' : '';
 
         inputs.forEach(id => {
@@ -243,7 +239,6 @@ export async function init() {
 
         editActions.classList.toggle('hidden', !isEditing);
         editOverlay.classList.toggle('hidden', !isEditing);
-        lucide.createIcons();
     });
 
     document.getElementById('openTagModalBtn').addEventListener('click', async () => {
@@ -354,6 +349,4 @@ export async function init() {
         window.history.pushState({}, "", BASE_PATH + "/home");
         window.dispatchEvent(new PopStateEvent('popstate'));
     }
-
-    lucide.createIcons();
 }

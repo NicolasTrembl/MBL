@@ -364,8 +364,6 @@ export function init() {
         }
     });
 
-    lucide.createIcons();
-    
     return async () => {
         console.log("Nettoyage du module add.js...");
         await stopScanner();
