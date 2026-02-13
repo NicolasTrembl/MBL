@@ -14,12 +14,12 @@
             "sizes": "512x512"
         }
     ],
-    "start_url": "./index.html",
     "display": "standalone",
     "display_override": ["window-controls-overlay"],
     "theme_color": "#ffffff",
     "background_color": "#181B1E",
     "lang": "fr-FR",
-    "scope": "./",
+    "start_url": "/MBL/index.html",
+    "scope": "/MBL/",
     "orientation": "portrait-primary"
 }

@@ -66,6 +66,9 @@ h1 {
 main {
     flex: 1;
     
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
     background-color: var(--background-color);
 }
 
@@ -81,6 +84,8 @@ nav {
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
+
+    flex-shrink: 0;
 
     height: var(--nav-height);
     

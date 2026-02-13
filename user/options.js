@@ -51,6 +51,17 @@ const themes = {
     }
 };
 
+// Duplicate TODO: Move to utils js
+function updateMetaThemeColor(color) {
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = "theme-color";
+        document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', color);
+}
+
 function applyTheme(themeName, customColors = null) {
     const theme = (themeName === 'custom' && customColors) ? customColors : themes[themeName];
     
@@ -60,6 +71,9 @@ function applyTheme(themeName, customColors = null) {
     
     Object.entries(theme).forEach(([property, value]) => {
         root.style.setProperty(property, value);
+        if (property === '--background-variant') {
+            updateMetaThemeColor(value);
+        }
     });
 
     localStorage.setItem('selectedTheme', themeName);

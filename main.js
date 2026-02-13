@@ -38,7 +38,7 @@ function loadSavedTheme() {
             
             Object.entries(colors).forEach(([property, value]) => {
                 root.style.setProperty(property, value);
-                if (property === '--background-color') {
+                if (property === '--background-variant') {
                     updateMetaThemeColor(value);
                 }
             });
