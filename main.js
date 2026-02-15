@@ -166,6 +166,27 @@ document.getElementById('menuAnnotations')?.addEventListener("click", () => {
     router();
 });
 
+
+document.getElementById('menuAdd')?.addEventListener("click", () => {
+    toggleMenu();
+    window.history.pushState({}, "", BASE_PATH + "/add");
+    router();
+});
+
+
+document.getElementById('menuParams')?.addEventListener("click", () => {
+    toggleMenu();
+    window.history.pushState({}, "", BASE_PATH + "/user");
+    router();
+});
+
+
+document.getElementById('menuBooks')?.addEventListener("click", () => {
+    toggleMenu();
+    window.history.pushState({}, "", BASE_PATH + "/home");
+    router();
+});
+
 window.addEventListener("popstate", router);
 
 window.addEventListener("beforeunload", () => {
