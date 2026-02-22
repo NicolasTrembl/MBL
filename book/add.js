@@ -83,15 +83,19 @@ export function init() {
         btn.addEventListener('click', async (e) => {
             const mode = e.currentTarget.id.replace('mode', '').toLowerCase();
             const container = document.querySelector(".add-container");
+            const advancedFields = document.getElementById('advancedFields'); // Ajout
+            
             document.querySelectorAll('.mode-selector button').forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
 
             if (mode === 'manual') {
                 container.style.justifyContent = 'flex-start';
                 document.getElementById('uploadHint')?.classList.remove('hidden');
+                advancedFields?.classList.remove('hidden'); // On affiche les champs
             } else {
                 container.style.justifyContent = 'space-between';
                 document.getElementById('uploadHint')?.classList.add('hidden');
+                advancedFields?.classList.add('hidden'); // On cache les champs
             }
 
             Object.values(views).forEach(v => v?.classList.add('hidden'));
@@ -112,6 +116,10 @@ export function init() {
         document.getElementById('detailTitle').value = book.title || "";
         document.getElementById('detailAuthor').value = book.author || "";
         document.getElementById('detailYear').value = book.year || "";
+        document.getElementById('detailPublisher').value = book.publisher || "";
+        document.getElementById('detailPages').value = book.pages || "";
+        document.getElementById('detailIsbn').value = book.isbn || "";
+        document.getElementById('detailSummary').value = book.summary || "";
 
         const img = document.getElementById('prevCover');
 
@@ -311,18 +319,43 @@ export function init() {
         };
     }
 
+    const coverWrapper = document.getElementById('coverWrapper');
+    const coverInput = document.getElementById('coverInput');
+    const prevCover = document.getElementById('prevCover');
+
+    if (coverWrapper && coverInput) {
+        coverWrapper.addEventListener('click', () => {
+            coverInput.click();
+        });
+
+        coverInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    prevCover.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     const saveBtn = document.getElementById('saveBookBtn');
     saveBtn?.addEventListener('click', async () => {
         const title = document.getElementById('detailTitle').value.trim();
         const author = document.getElementById('detailAuthor').value.trim();
         const year = document.getElementById('detailYear').value.trim();
-
-        saveBtn.innerText = "Enregistrement..."
+        const publisher = document.getElementById('detailPublisher').value.trim();
+        const pages = document.getElementById('detailPages').value.trim();
+        const isbn = document.getElementById('detailIsbn').value.trim();
+        const summary = document.getElementById('detailSummary').value.trim();
 
         if (!title) {
             alert("Le titre est requis !");
             return;
         }
+
+        saveBtn.innerText = "Enregistrement...";
 
         const coverElement = document.getElementById('prevCover');
         const coverUrl = coverElement.src;
@@ -340,10 +373,10 @@ export function init() {
             title: title,
             author: author,
             year: year,
-            pages: selectedBookFullData?.pages || "",
-            summary: selectedBookFullData?.summary || "",
-            publisher: selectedBookFullData?.publisher || "",
-            isbn: selectedBookFullData?.isbn || "",
+            pages: pages,
+            summary: summary,
+            publisher: publisher,
+            isbn: isbn,
             cover: coverBlob,
             status: "to-read",
             readCount: 0,

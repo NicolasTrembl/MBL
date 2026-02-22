@@ -1006,3 +1006,30 @@ button {
     color: var(--font-color-default);
     font-family: inherit;
 }
+
+.advanced-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--r-gap);
+}
+
+.advanced-fields.hidden {
+    display: none !important;
+}
+
+.fields-group input, .fields-group textarea, 
+.advanced-fields input, .advanced-fields textarea, 
+.input-wrapper input {
+    padding: var(--s-padding) var(--xs-padding) var(--s-padding) var(--xs-padding);
+    border: 1px solid var(--light-color);
+    border-radius: var(--s-radius);
+    outline: none;
+    width: 100%;
+    background: transparent;
+    color: var(--font-color-default);
+    font-family: inherit;
+}
+
+.advanced-fields textarea {
+    resize: vertical;
+}

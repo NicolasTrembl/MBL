@@ -38,9 +38,17 @@
         </div>
         
         <div class="fields-group">
-            <input type="text" id="detailTitle" placeholder="Titre du livre">
-            <input type="text" id="detailAuthor" placeholder="Auteur">
+            <input type="text" id="detailTitle" placeholder="Titre du livre *">
+            <input type="text" id="detailAuthor" placeholder="Auteur *">
             <input type="number" id="detailYear" placeholder="Année de parution">
+            
+            <div id="advancedFields" class="advanced-fields hidden">
+                <input type="text" id="detailPublisher" placeholder="Éditeur">
+                <input type="number" id="detailPages" placeholder="Nombre de pages">
+                <input type="text" id="detailIsbn" placeholder="Numéro ISBN">
+                <textarea id="detailSummary" placeholder="Résumé du livre" rows="4"></textarea>
+            </div>
+
             <button id="saveBookBtn" class="btn-success">Enregistrer</button>
         </div>
     </div>
