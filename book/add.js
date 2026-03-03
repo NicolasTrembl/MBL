@@ -193,7 +193,7 @@ export function init() {
         } catch (err) {
             console.error("Erreur de recherche BnF:", err);
         }
-    }, 750));
+    }, 550));
 
     async function startScanner() {
         if (isScanning || !html5QrCode) return;

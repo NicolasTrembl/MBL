@@ -1,6 +1,11 @@
 let allAnnotations = [];
 let allBooks = [];
 let editingNoteId = null;
+let activeFilters = {
+    sortOrder: 'date-desc',
+    book: 'all',
+    type: 'all'
+};
 
 export async function init() {
     const db = await openDB();
@@ -10,6 +15,7 @@ export async function init() {
     const modalTitle = document.getElementById('modalTitle');
     const deleteBtn = document.getElementById('deleteNoteBtn');
     const bookSelect = document.getElementById('noteBookSelect');
+    const filterModal = document.getElementById('filterModal');
     
     const fields = {
         text: document.getElementById('noteText'),
@@ -27,14 +33,35 @@ export async function init() {
         allBooks = books;
         
         bookSelect.innerHTML = allBooks.map(b => `<option value="${b.id}">${b.title}</option>`).join('');
+
+        const filterBookSelect = document.getElementById('filterBook');
+        filterBookSelect.innerHTML = `<option value="all">Tous les livres</option>` +
+            allBooks.map(b => `<option value="${b.id}">${b.title}</option>`).join('');
     };
 
     const render = () => {
         const query = document.getElementById('searchInput').value.toLowerCase();
-        
-        const filtered = allAnnotations.filter(n => 
-            n.text.toLowerCase().includes(query) || (n.quote && n.quote.toLowerCase().includes(query))
-        ).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        let filtered = allAnnotations.filter(n => {
+            const matchesSearch = n.text.toLowerCase().includes(query) || 
+                                  (n.quote && n.quote.toLowerCase().includes(query));
+            const matchesBook = activeFilters.book === 'all' || n.bookId === activeFilters.book;
+            const matchesType = activeFilters.type === 'all' ||
+                (activeFilters.type === 'quote' && n.quote) ||
+                (activeFilters.type === 'image' && n.image) ||
+                (activeFilters.type === 'page' && n.page);
+            return matchesSearch && matchesBook && matchesType;
+        });
+
+        filtered.sort((a, b) => {
+            switch (activeFilters.sortOrder) {
+                case 'date-desc': return new Date(b.date) - new Date(a.date);
+                case 'date-asc':  return new Date(a.date) - new Date(b.date);
+                case 'page-asc':  return (a.page || 0) - (b.page || 0);
+                case 'page-desc': return (b.page || 0) - (a.page || 0);
+                default: return 0;
+            }
+        });
 
         container.innerHTML = filtered.length 
             ? filtered.map(note => createNoteCard(note)).join('')
@@ -43,6 +70,11 @@ export async function init() {
         document.querySelectorAll('.edit-trigger').forEach(btn => {
             btn.onclick = () => openModal(Number(btn.dataset.id)); 
         });
+
+        // Highlight filter button if filters are active
+        const filterBtn = document.getElementById('openFilterBtn');
+        const filtersActive = activeFilters.book !== 'all' || activeFilters.type !== 'all' || activeFilters.sortOrder !== 'date-desc';
+        filterBtn.style.color = filtersActive ? 'var(--highlight-color)' : '';
     };
 
     const openModal = (id = null) => {
@@ -116,6 +148,31 @@ export async function init() {
         modal.classList.add('hidden');
         render();
     };
+
+    // Filter modal
+    document.getElementById('openFilterBtn').addEventListener('click', () => {
+        document.getElementById('sortOrder').value = activeFilters.sortOrder;
+        document.getElementById('filterBook').value = activeFilters.book;
+        document.getElementById('filterType').value = activeFilters.type;
+        filterModal.classList.remove('hidden');
+    });
+
+    document.getElementById('applyAnnotationFilters').addEventListener('click', () => {
+        activeFilters.sortOrder = document.getElementById('sortOrder').value;
+        activeFilters.book = document.getElementById('filterBook').value;
+        activeFilters.type = document.getElementById('filterType').value;
+        filterModal.classList.add('hidden');
+        render();
+    });
+
+    document.getElementById('resetAnnotationFilters').addEventListener('click', () => {
+        activeFilters = { sortOrder: 'date-desc', book: 'all', type: 'all' };
+        document.getElementById('sortOrder').value = 'date-desc';
+        document.getElementById('filterBook').value = 'all';
+        document.getElementById('filterType').value = 'all';
+        filterModal.classList.add('hidden');
+        render();
+    });
 
     document.getElementById('addNoteBtn').onclick = () => openModal();
     document.getElementById('closeNoteModal').onclick = () => modal.classList.add('hidden');

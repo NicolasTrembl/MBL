@@ -303,26 +303,40 @@ export async function init() {
         const title = document.getElementById('detailTitle').value.trim();
         if (!title) return alert("Le titre est requis");
 
-        const tx = db.transaction("books", "readwrite");
-        const store = tx.objectStore("books");
-        
+        let coverBlob = currentBook.cover;
+        const coverSrc = document.getElementById('prevCover').src;
+        if (coverSrc.startsWith('blob:') || coverSrc.startsWith('data:')) {
+            const res = await fetch(coverSrc);
+            coverBlob = await res.blob();
+        }
+
         const updatedData = {
             ...currentBook,
             title,
             author: document.getElementById('detailAuthor').value.trim(),
             year: document.getElementById('detailYear').value.trim(),
             status: document.getElementById('detailStatus').value,
+            id: currentBook.id,
+            pages: currentBook.pages,
+            summary: currentBook.summary,
+            publisher: currentBook.publisher,
+            isbn: currentBook.isbn,
+            readCount: currentBook.readCount,
+            dateAdded: currentBook.dateAdded,
+            bookmark: currentBook.bookmark,
+            tags: currentBook.tags,
+            cover: coverBlob,
             dateUpdated: new Date().toISOString()
         };
 
-        const coverSrc = document.getElementById('prevCover').src;
-        if (coverSrc.startsWith('data:')) {
-            const res = await fetch(coverSrc);
-            updatedData.cover = await res.blob();
-        }
-
+        const tx = db.transaction("books", "readwrite");
+        const store = tx.objectStore("books");
         await store.put(updatedData);
+        currentBook = updatedData;
+
+        toggleEditBtn.click();
     });
+
 
     document.getElementById('coverWrapper').addEventListener('click', () => {
         if (isEditing) document.getElementById('coverInput').click();
