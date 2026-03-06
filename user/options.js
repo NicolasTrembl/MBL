@@ -86,6 +86,13 @@ export function init() {
 
     document.getElementById('exportJSON')?.addEventListener('click', handleExportJSON);
     document.getElementById('exportExcel')?.addEventListener('click', handleExportExcel);
+
+    document.getElementById('clearCacheBtn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('clearCacheBtn');
+        btn.disabled = true;
+        btn.textContent = 'Vidage en cours…';
+        clearCacheAndReload();
+    });
     
     const savedCustom = JSON.parse(localStorage.getItem('customTheme'));
     if (savedCustom) {
@@ -135,7 +142,5 @@ export function init() {
         });
     }
 
-    return () => {
-
-    };
+    return () => {};
 }

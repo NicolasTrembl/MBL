@@ -8,7 +8,7 @@ const h1 = document.getElementById("title");
 // TODO: Move to utils script
 function loadScript(src) {
     return new Promise((resolve, reject) => {
-        if (window.XLSX) return resolve(); // Déjà chargé
+        if (window.XLSX) return resolve();
 
         const script = document.createElement('script');
         script.src = src;
@@ -48,6 +48,68 @@ function loadSavedTheme() {
     }
 }
 
+function checkForUpdate() {
+    if (!navigator.serviceWorker?.controller) return;
+
+    const channel = new MessageChannel();
+    channel.port1.onmessage = (event) => {
+        if (event.data?.isOutdated) {
+            showUpdateBanner();
+        }
+    };
+    navigator.serviceWorker.controller.postMessage(
+        { action: 'CHECK_VERSION' },
+        [channel.port2]
+    );
+}
+
+function showUpdateBanner() {
+    if (document.getElementById('update-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'update-banner';
+    banner.style.cssText = `
+        position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
+        background: var(--background-variant); color: var(--font-color-default);
+        padding: 12px 20px; border-radius: 12px; z-index: 9999;
+        display: flex; gap: 12px; align-items: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3); font-size: 14px;
+        white-space: nowrap;
+    `;
+    banner.innerHTML = `
+        <span>Nouvelle version disponible</span>
+        <button id="update-btn" style="
+            background: var(--card-background-color); color: var(--font-color-on-lg);
+            border: none; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-weight: 600;
+        ">Mettre à jour</button>
+        <button id="update-dismiss" style="
+            background: transparent; border: none; cursor: pointer;
+            color: var(--font-color-default); font-size: 18px; line-height: 1;
+        ">✕</button>
+    `;
+    document.body.appendChild(banner);
+
+    document.getElementById('update-btn').addEventListener('click', () => {
+        clearCacheAndReload();
+    });
+    document.getElementById('update-dismiss').addEventListener('click', () => {
+        banner.remove();
+    });
+}
+
+window.clearCacheAndReload = function clearCacheAndReload() {
+    if (!navigator.serviceWorker?.controller) {
+        window.location.reload();
+        return;
+    }
+    const channel = new MessageChannel();
+    channel.port1.onmessage = () => window.location.reload();
+    navigator.serviceWorker.controller.postMessage(
+        { action: 'CLEAR_CACHE' },
+        [channel.port2]
+    );
+}
+
 const routes = {
     '/': 'collection/home',
     '/home': 'collection/home',
@@ -77,7 +139,6 @@ async function router() {
     }
 
     const cleanPath = path.split('?')[0];
-
     const viewName = routes[cleanPath] || 'collection/index';
 
     const redirect = sessionStorage.getItem('redirect');
@@ -101,7 +162,6 @@ async function router() {
         window.currentModuleCleanup = null;
     }
 
-
     h1.innerText = title[cleanPath] || "404";    
     main.innerHTML = "<div class='centering' style='height:100%; width:100%;'><p>Chargement...</p></div>";
 
@@ -113,7 +173,7 @@ async function router() {
 
         main.innerHTML = html;
 
-        const module = await import(`./${viewName}.js?t=${Date.now()}`).catch(() => null);
+        const module = await import(`./${viewName}.js`).catch(() => null);
         
         if (module && module.init && !signal.aborted) {
             const cleanup = module.init();
@@ -166,20 +226,17 @@ document.getElementById('menuAnnotations')?.addEventListener("click", () => {
     router();
 });
 
-
 document.getElementById('menuAdd')?.addEventListener("click", () => {
     toggleMenu();
     window.history.pushState({}, "", BASE_PATH + "/add");
     router();
 });
 
-
 document.getElementById('menuParams')?.addEventListener("click", () => {
     toggleMenu();
     window.history.pushState({}, "", BASE_PATH + "/user");
     router();
 });
-
 
 document.getElementById('menuBooks')?.addEventListener("click", () => {
     toggleMenu();
@@ -197,18 +254,22 @@ window.addEventListener("beforeunload", () => {
 
 loadSavedTheme();
 
-window.onload = router;
+window.onload = () => {
+    router();
+};
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
+            navigator.serviceWorker.ready.then(() => {
+                checkForUpdate();
+            });
+
             reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        if (confirm("Nouvelle version disponible. Recharger ?")) {
-                            window.location.reload();
-                        }
+                        showUpdateBanner();
                     }
                 });
             });
